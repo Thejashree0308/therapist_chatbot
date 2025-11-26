@@ -2,6 +2,6 @@ Flask==2.3.3
 python-dotenv==1.0.0
 google-generativeai==0.2.1
 httpx==0.24.1
-sqlite3  # built-in, no need to install
 hashlib  # built-in, no need to install
+
 
