@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therabot - Your Digital Therapist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e0f7fa; /* light blue background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #01579b; /* dark blue text */
+        }
+        h1 { color: #0288d1; }
+        p { color: #0277bd; }
+
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            height: 70vh;
+            border: 2px solid #0288d1;
+            border-radius: 10px;
+            padding: 10px;
+            overflow-y: scroll;
+            background: #b3e5fc; /* pale blue chat background */
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user { 
+            background-color: #81d4fa; 
+            align-self: flex-end; 
+            color: #01579b;
+        }
+        .bot { 
+            background-color: #4fc3f7; 
+            align-self: flex-start; 
+            color: #ffffff;
+        }
+
+        #input-form { 
+            display: flex; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-top: 10px; 
+        }
+        #message-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #0288d1;
+            outline: none;
+        }
+        #send-btn {
+            padding: 12px 20px;
+            border: none;
+            background-color: #0288d1;
+            color: white;
+            border-radius: 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #send-btn:hover { 
+            background-color: #01579b; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Therabot - Your Digital Therapist</h1>
+    <p>I'm here to listen and help you feel better</p>
+
+    <div id="chatbox"></div>
+
+    <form id="input-form">
+        <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off" />
+        <button type="submit" id="send-btn">Send</button>
+    </form>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const inputForm = document.getElementById("input-form");
+        const messageInput = document.getElementById("message-input");
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement("div");
+            msgDiv.classList.add("message", sender);
+            msgDiv.textContent = text;
+            chatbox.appendChild(msgDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        inputForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, "user");
+            messageInput.value = "";
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userMessage })
+                });
+                const data = await response.json();
+                appendMessage(data.response, "bot");
+            } catch (err) {
+                appendMessage("Oops! Something went wrong.", "bot");
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
